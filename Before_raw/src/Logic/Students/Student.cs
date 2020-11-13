@@ -28,7 +28,7 @@ namespace Logic.Students
             Email = email;
         }
 
-        public virtual Enrollment GetEnrollment(int index)
+        private Enrollment GetEnrollment(int index)
         {
             if (_enrollments.Count > index)
                 return _enrollments[index];
@@ -36,15 +36,16 @@ namespace Logic.Students
             return null;
         }
 
-        public virtual void RemoveEnrollment(Enrollment enrollment, string comment)
+        public virtual void RemoveEnrollment(Enrollment enrollment)
         {
             _enrollments.Remove(enrollment);
+        }
 
+        public virtual void AddDisenrollmentComment(Enrollment enrollment, string comment)
+        {
             var disenrollment = new Disenrollment(enrollment.Student, enrollment.Course, comment);
             _disenrollments.Add(disenrollment);
         }
-
-        
 
         public virtual void Enroll(Course course, Grade grade)
         {
