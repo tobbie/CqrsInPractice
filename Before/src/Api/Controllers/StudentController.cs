@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Api.Dtos;
+using Logic.Dtos;
 using CSharpFunctionalExtensions;
 using Logic.Students;
 using Logic.Utils;
@@ -15,21 +15,22 @@ namespace Api.Controllers
         private readonly UnitOfWork _unitOfWork;
         private readonly StudentRepository _studentRepository;
         private readonly CourseRepository _courseRepository;
+        private readonly Messages _mesages;
 
-        public StudentController(UnitOfWork unitOfWork)
+        public StudentController(UnitOfWork unitOfWork, Messages messages)
         {
             _unitOfWork = unitOfWork;
             _studentRepository = new StudentRepository(unitOfWork);
             _courseRepository = new CourseRepository(unitOfWork);
+            _mesages = messages;
         }
 
         [HttpGet]
         public IActionResult GetList(string enrolled, int? number)
         {
-            IReadOnlyList<Student> students = _studentRepository.GetList(enrolled, number);
-            List<StudentDto> dtos = students.Select(x => ConvertToDto(x)).ToList();
-            _unitOfWork.Commit();
-            return Ok(dtos);
+            var query = new GetListQuery(enrolled, number);
+            var resultList = _mesages.Dispatch(query);
+            return Ok(resultList);
         }
 
         private StudentDto ConvertToDto(Student student)
@@ -51,24 +52,9 @@ namespace Api.Controllers
         [HttpPost]
         public IActionResult Register([FromBody]NewStudentDto dto)
         {
-            var student = new Student(dto.Name, dto.Email);
-
-            if (dto.Course1 != null && dto.Course1Grade != null)
-            {
-                Course course = _courseRepository.GetByName(dto.Course1);
-                student.Enroll(course, Enum.Parse<Grade>(dto.Course1Grade));
-            }
-
-            if (dto.Course2 != null && dto.Course2Grade != null)
-            {
-                Course course = _courseRepository.GetByName(dto.Course2);
-                student.Enroll(course, Enum.Parse<Grade>(dto.Course2Grade));
-            }
-
-            _studentRepository.Save(student);
-            _unitOfWork.Commit();
-
-            return Ok();
+            var command = new RegisterCommand(dto);
+            Result result = _mesages.Dispatch(command);
+            return result.IsSuccess ? Ok() : Error(result.Error);          
         }
 
         [HttpDelete("{id}")]
@@ -157,15 +143,10 @@ namespace Api.Controllers
 
         [HttpPut("{id}")]
         public IActionResult EditPersonalInfo(long id, [FromBody] StudentPersonalInfoDto dto) {
-            var command = new EditPersonalInfoCommand
-            {
-                Email = dto.Email,
-                Name = dto.Name,
-                Id = id
-            };
-            var handler = new EditPersonalInfoCommandHandler(_unitOfWork);
-            Result result  = handler.Handle(command);
-            
+
+            var command = new EditPersonalInfoCommand(id, dto.Name, dto.Email);
+            Result result = _mesages.Dispatch(command);
+
             return result.IsSuccess ? Ok() : Error(result.Error);
         }     
     }
