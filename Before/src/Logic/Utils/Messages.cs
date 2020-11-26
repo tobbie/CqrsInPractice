@@ -1,6 +1,6 @@
 ﻿using System;
 using CSharpFunctionalExtensions;
-using Logic.Students;
+using Logic.AppServices;
 
 namespace Logic.Utils
 {

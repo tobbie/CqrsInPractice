@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Logic.Dtos;
 using CSharpFunctionalExtensions;
+using Logic.AppServices;
 using Logic.Students;
 using Logic.Utils;
 using Microsoft.AspNetCore.Mvc;

@@ -14,5 +14,6 @@
   <ItemGroup>
     <Folder Include="Dtos\" />
     <Folder Include="Decorators\" />
+    <Folder Include="AppServices\" />
   </ItemGroup>
 </Project>
