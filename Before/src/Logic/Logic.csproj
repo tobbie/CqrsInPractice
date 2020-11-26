@@ -13,5 +13,6 @@
 
   <ItemGroup>
     <Folder Include="Dtos\" />
+    <Folder Include="Decorators\" />
   </ItemGroup>
 </Project>
