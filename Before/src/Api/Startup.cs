@@ -25,9 +25,11 @@ namespace Api
 
             var config = new Config(3); // in prod, get from appsettings.json.
             services.AddSingleton(config);
-            services.AddSingleton(new SessionFactory(Configuration["ConnectionString"]));
-            services.AddTransient<UnitOfWork>();
-
+            var commandsConnectionString = new CommandsConnectionString(Configuration["CommandsConnectionString"]);
+            var queriesConnectionString = new QueriesConnectionString(Configuration["QueriesConnectionString"]);
+            services.AddSingleton(commandsConnectionString);
+            services.AddSingleton(queriesConnectionString);
+            services.AddSingleton<SessionFactory>();
             
             services.AddSingleton<Messages>();
             services.AddHandlers();

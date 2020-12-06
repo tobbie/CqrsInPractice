@@ -12,17 +12,11 @@ namespace Api.Controllers
 {
     [Route("api/students")]
     public sealed class StudentController : BaseController
-    {
-        private readonly UnitOfWork _unitOfWork;
-        private readonly StudentRepository _studentRepository;
-        private readonly CourseRepository _courseRepository;
+    { 
         private readonly Messages _mesages;
 
-        public StudentController(UnitOfWork unitOfWork, Messages messages)
-        {
-            _unitOfWork = unitOfWork;
-            _studentRepository = new StudentRepository(unitOfWork);
-            _courseRepository = new CourseRepository(unitOfWork);
+        public StudentController(Messages messages)
+        {       
             _mesages = messages;
         }
 
