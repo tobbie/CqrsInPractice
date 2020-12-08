@@ -3,6 +3,10 @@ using Logic.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Logic.Students;
+using System.Collections.Generic;
+using Logic.Dtos;
+using Logic.Decorators;
 
 namespace Api
 {
@@ -19,8 +23,16 @@ namespace Api
         {
             services.AddMvc();
 
-            services.AddSingleton(new SessionFactory(Configuration["ConnectionString"]));
-            services.AddScoped<UnitOfWork>();
+            var config = new Config(3); // in prod, get from appsettings.json.
+            services.AddSingleton(config);
+            var commandsConnectionString = new CommandsConnectionString(Configuration["CommandsConnectionString"]);
+            var queriesConnectionString = new QueriesConnectionString(Configuration["QueriesConnectionString"]);
+            services.AddSingleton(commandsConnectionString);
+            services.AddSingleton(queriesConnectionString);
+            services.AddSingleton<SessionFactory>();
+            
+            services.AddSingleton<Messages>();
+            services.AddHandlers();
         }
 
         public void Configure(IApplicationBuilder app)
